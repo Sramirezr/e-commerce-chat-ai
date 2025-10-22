@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  api:
+    # Construye la imagen usando el Dockerfile del proyecto
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Nombre del contenedor
+    container_name: ecommerce-api
+
+    # Puerto externo 8000 conectado al interno 8000
+    ports:
+      - "8000:8000"
+
+    # Archivo con variables de entorno (.env)
+    env_file:
+      - .env
+
+    # Variables de entorno que usa la aplicación
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      DATABASE_URL: sqlite:///./data/ecommerce_chat.db
+      ENVIRONMENT: development
+
+    # Carpetas compartidas con el contenedor
+    volumes:
+      - ./data:/app/data        # Guarda la base de datos local
+      - .:/app                  # Sincroniza el código para desarrollo
+
+    # Comando que inicia la aplicación FastAPI
+    command: uvicorn src.infrastructure.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+    # Reinicia automáticamente si el contenedor se detiene
+    restart: unless-stopped
+
+    # Comprueba que el servicio esté funcionando correctamente
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+    # Red donde se conectarán otros servicios (si se agregan)
+    networks:
+      - app-network
+
+# Volumen para almacenar datos de forma persistente
+volumes:
+  db-data:
+
+# Red interna para comunicación entre servicios
+networks:
+  app-network:
+    driver: bridge

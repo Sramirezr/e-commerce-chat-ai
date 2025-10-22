@@ -1,0 +1,27 @@
+# Ignorar entornos virtuales
+venv/
+env/
+
+# Archivos sensibles
+.env
+
+# Archivos y carpetas temporales
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# IDE / sistema
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Base de datos local
+data/
+*.db
+
+# Cache de pruebas
+.pytest_cache/
+.coverage
+htmlcov/
